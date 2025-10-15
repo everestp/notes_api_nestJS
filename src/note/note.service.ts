@@ -1,13 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class NoteService {
-  create(createNoteDto: CreateNoteDto) {
+  private logger = new Logger(NoteService.name)
+  constructor(private readonly prismaService:PrismaService){}
+   async create(createNoteDto: CreateNoteDto ,userId:number) {
 
-    // create not
-    return 'This action adds a new note';
+    // create note
+   const note =   await this.prismaService.note.create({
+      data:{
+        title:createNoteDto.body,
+        body:createNoteDto.title,
+        userId,
+      }
+    })
+    this.logger.log("New note has been created")
+    return  note
   }
 
   findAll() {
