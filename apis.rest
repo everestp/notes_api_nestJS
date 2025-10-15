@@ -1,0 +1,10 @@
+http://localhost:3000
+
+
+###
+POST http://localhost:3000/auth/register
+{
+   "name": "EDFgdf",
+  "email": "egverdfgdffdfddfdf@efstesample.com",
+  "password": "securfgfgdsfS@ePassword123"
+}
