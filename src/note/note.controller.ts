@@ -14,7 +14,7 @@ export class NoteController {
     return this.noteService.create(createNoteDto ,req.user.sub);
   }
 
-    @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 @Get()
 findAll(
   @Request() req: { user: { sub: number } },
@@ -27,10 +27,11 @@ findAll(
   return this.noteService.findAll({ take: takeValue, skip: skipValue }, req.user.sub);
 }
 
-
+@UseGuards(AuthGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.noteService.findOne(+id);
+  findOne(@Param('id',ParseIntPipe) id: number ,@Request() req:{user:{sub:number}}) {
+  
+    return this.noteService.findOne(id ,req.user.sub);
   }
 
   @Patch(':id')

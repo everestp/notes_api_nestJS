@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -33,8 +33,12 @@ export class NoteService {
     return notes
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} note`;
+  async findOne(id: number ,userId:number) {
+    const note =  await this.prismaService.note.findFirst({where :{id}})
+    if (note?.userId  !== userId){
+      throw new  ForbiddenException("Not allowed")
+    }
+    return note
   }
 
   update(id: number, updateNoteDto: UpdateNoteDto) {
