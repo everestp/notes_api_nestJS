@@ -2,6 +2,8 @@ import { ForbiddenException, Injectable, Logger, NotFoundException, Unauthorized
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { PrismaService } from 'src/prisma.service';
+import { PrismaClientKnownRequestError } from 'generated/prisma/runtime/library';
+import { error } from 'console';
 
 @Injectable()
 export class NoteService {
@@ -68,9 +70,20 @@ return updated
 
   
   }
-  
 
-  remove(id: number) {
-    return `This action removes a #${id} note`;
+
+ async remove(id: number ,userId:number) {
+  try {
+    
+    return await  this.prismaService.note.delete({where :{id ,userId}})
+  } catch (error) {
+   if(error  instanceof PrismaClientKnownRequestError){
+    if(error.code ==='P2025'){
+      throw new ForbiddenException("Not allowed")
+    }
+   }
+  }
+    throw error
+
   }
 }
