@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards ,Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards ,Request, Query, ParseIntPipe } from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
@@ -14,10 +14,19 @@ export class NoteController {
     return this.noteService.create(createNoteDto ,req.user.sub);
   }
 
-  @Get()
-  findAll() {
-    return this.noteService.findAll();
-  }
+    @UseGuards(AuthGuard)
+@Get()
+findAll(
+  @Request() req: { user: { sub: number } },
+  @Query('take', new ParseIntPipe({ optional: true })) take?: number,
+  @Query('skip', new ParseIntPipe({ optional: true })) skip?: number,
+) {
+  const takeValue = take ?? 10; // default to 10
+  const skipValue = skip ?? 5;  // default to 5
+
+  return this.noteService.findAll({ take: takeValue, skip: skipValue }, req.user.sub);
+}
+
 
   @Get(':id')
   findOne(@Param('id') id: string) {
